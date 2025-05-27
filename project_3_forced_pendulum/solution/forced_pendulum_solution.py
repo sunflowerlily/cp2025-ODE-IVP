@@ -2,162 +2,97 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
-def forced_pendulum_ode(t, y, gamma, omega_d, F_d):
+def forced_pendulum_ode(t, state, l, g, C, Omega):
     """
-    受驱单摆的常微分方程组。
-    y[0]: 角度 theta
-    y[1]: 角速度 omega
+    受驱单摆的常微分方程
+    state: [theta, omega]
+    返回: [dtheta/dt, domega/dt]
     """
-    theta, omega = y
+    theta, omega = state
     dtheta_dt = omega
-    domega_dt = -gamma * omega - np.sin(theta) + F_d * np.cos(omega_d * t)
+    domega_dt = -(g/l)*np.sin(theta) + C*np.cos(theta)*np.sin(Omega*t)
     return [dtheta_dt, domega_dt]
 
-def euler_method(ode_func, y0, t_span, dt, *args):
+def solve_pendulum(l=0.1, g=9.81, C=2, Omega=5, t_span=(0,100), y0=[0,0]):
     """
-    欧拉法求解ODE。
+    求解受迫单摆运动方程
+    返回: t, theta
     """
-    t = np.arange(t_span[0], t_span[1] + dt, dt)
-    y = np.zeros((len(t), len(y0)))
-    y[0] = y0
-    for i in range(len(t) - 1):
-        dy = np.array(ode_func(t[i], y[i], *args))
-        y[i+1] = y[i] + dy * dt
-    return t, y
+    # 设置时间点
+    t_eval = np.linspace(t_span[0], t_span[1], 2000)
+    
+    # 使用solve_ivp求解
+    sol = solve_ivp(
+        lambda t, y: forced_pendulum_ode(t, y, l, g, C, Omega),
+        t_span,
+        y0,
+        t_eval=t_eval,
+        rtol=1e-6,
+        atol=1e-9
+    )
+    
+    return sol.t, sol.y[0]
 
-def improved_euler_method(ode_func, y0, t_span, dt, *args):
+def find_resonance(l=0.1, g=9.81, C=2, Omega_range=None, t_span=(0,200), y0=[0,0]):
     """
-    改进欧拉法（Heun's method）求解ODE。
+    寻找共振频率
+    返回: Omega_range, amplitudes
     """
-    t = np.arange(t_span[0], t_span[1] + dt, dt)
-    y = np.zeros((len(t), len(y0)))
-    y[0] = y0
-    for i in range(len(t) - 1):
-        k1 = np.array(ode_func(t[i], y[i], *args))
-        y_temp = y[i] + k1 * dt
-        k2 = np.array(ode_func(t[i+1], y_temp, *args))
-        y[i+1] = y[i] + 0.5 * (k1 + k2) * dt
-    return t, y
-
-def rk4_method(ode_func, y0, t_span, dt, *args):
-    """
-    四阶龙格-库塔法（RK4）求解ODE。
-    """
-    t = np.arange(t_span[0], t_span[1] + dt, dt)
-    y = np.zeros((len(t), len(y0)))
-    y[0] = y0
-    for i in range(len(t) - 1):
-        k1 = np.array(ode_func(t[i], y[i], *args))
-        k2 = np.array(ode_func(t[i] + 0.5 * dt, y[i] + 0.5 * k1 * dt, *args))
-        k3 = np.array(ode_func(t[i] + 0.5 * dt, y[i] + 0.5 * k2 * dt, *args))
-        k4 = np.array(ode_func(t[i] + dt, y[i] + k3 * dt, *args))
-        y[i+1] = y[i] + (k1 + 2*k2 + 2*k3 + k4) * dt / 6
-    return t, y
-
-def solve_and_compare_methods(ode_func, y0, t_span, dt, *args):
-    """
-    使用欧拉法、改进欧拉法和RK4法求解ODE，并返回结果。
-    """
-    t_euler, y_euler = euler_method(ode_func, y0, t_span, dt, *args)
-    t_improved_euler, y_improved_euler = improved_euler_method(ode_func, y0, t_span, dt, *args)
-    t_rk4, y_rk4 = rk4_method(ode_func, y0, t_span, dt, *args)
-    return (t_euler, y_euler), (t_improved_euler, y_improved_euler), (t_rk4, y_rk4)
-
-def plot_results(t_values, y_values, labels, title, y_labels=None):
-    """
-    绘制结果。
-    """
-    plt.figure(figsize=(10, 6))
-    for i, (t, y) in enumerate(zip(t_values, y_values)):
-        plt.plot(t, y[:, 0], label=f'{labels[i]} - Angle')
-        plt.plot(t, y[:, 1], linestyle='--', label=f'{labels[i]} - Angular Velocity')
-    plt.title(title)
-    plt.xlabel('Time (s)')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-def plot_phase_space(y_values, labels, title):
-    """
-    绘制相空间图。
-    """
-    plt.figure(figsize=(8, 8))
-    for i, y in enumerate(y_values):
-        plt.plot(y[:, 0], y[:, 1], label=labels[i])
-    plt.title(title)
-    plt.xlabel('Angle (rad)')
-    plt.ylabel('Angular Velocity (rad/s)')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-def analyze_resonance(gamma, omega_d_range, F_d, y0, t_span, dt):
-    """
-    分析共振现象，绘制不同驱动频率下的稳态振幅。
-    """
+    if Omega_range is None:
+        Omega0 = np.sqrt(g/l)  # 小角度近似下的自然频率
+        Omega_range = np.linspace(Omega0/2, 2*Omega0, 50)
+    
     amplitudes = []
-    for omega_d in omega_d_range:
-        sol = solve_ivp(forced_pendulum_ode, t_span, y0, args=(gamma, omega_d, F_d), dense_output=True, rtol=1e-6, atol=1e-9)
-        # 取后半段数据计算稳态振幅
-        t_steady = np.linspace(t_span[0] + (t_span[1] - t_span[0]) / 2, t_span[1], 100)
-        y_steady = sol.sol(t_steady)
-        amplitude = np.max(np.abs(y_steady[0]))
+    
+    for Omega in Omega_range:
+        # 求解方程
+        t, theta = solve_pendulum(l, g, C, Omega, t_span, y0)
+        
+        # 计算稳态振幅(取后半段数据)
+        steady_idx = t > t_span[0] + (t_span[1]-t_span[0])/2
+        amplitude = np.max(np.abs(theta[steady_idx]))
         amplitudes.append(amplitude)
     
-    plt.figure(figsize=(10, 6))
-    plt.plot(omega_d_range, amplitudes, 'o-')
-    plt.title('Resonance Curve: Amplitude vs. Driving Frequency')
-    plt.xlabel('Driving Frequency (rad/s)')
-    plt.ylabel('Steady-state Amplitude (rad)')
+    return Omega_range, amplitudes
+
+def plot_results(t, theta, title):
+    """绘制结果"""
+    plt.figure(figsize=(10, 5))
+    plt.plot(t, theta)
+    plt.title(title)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Angle (rad)')
     plt.grid(True)
     plt.show()
-    return amplitudes
 
-def analyze_chaos(gamma, omega_d, F_d_range, y0, t_span, dt):
-    """
-    分析混沌行为，绘制分岔图（例如，庞加莱截面）。
-    这里简化为绘制不同驱动力下的相空间图，观察混沌迹象。
-    """
-    for F_d in F_d_range:
-        t_rk4, y_rk4 = rk4_method(forced_pendulum_ode, y0, t_span, dt, gamma, omega_d, F_d)
-        plot_phase_space([y_rk4], [f'F_d = {F_d}'], f'Phase Space for F_d = {F_d}')
+def main():
+    """主函数"""
+    # 任务1: 特定参数下的数值解与可视化
+    t, theta = solve_pendulum()
+    plot_results(t, theta, 'Forced Pendulum: θ(t) vs t (Ω=5 rad/s)')
+    
+    # 任务2: 探究共振现象
+    Omega_range, amplitudes = find_resonance()
+    
+    # 绘制共振曲线
+    plt.figure(figsize=(10, 5))
+    plt.plot(Omega_range, amplitudes, 'o-', label='Amplitude')
+    plt.axvline(np.sqrt(9.81/0.1), color='r', linestyle='--', 
+               label='Natural frequency (small angle)')
+    plt.title('Resonance Curve: Amplitude vs Driving Frequency')
+    plt.xlabel('Driving Frequency Ω (rad/s)')
+    plt.ylabel('Steady-state Amplitude (rad)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    # 找到共振频率并绘制共振情况
+    resonance_idx = np.argmax(amplitudes)
+    Omega_res = Omega_range[resonance_idx]
+    print(f'Resonance frequency: {Omega_res:.3f} rad/s')
+    
+    t_res, theta_res = solve_pendulum(Omega=Omega_res)
+    plot_results(t_res, theta_res, f'Forced Pendulum at Resonance (Ω={Omega_res:.3f} rad/s)')
 
 if __name__ == '__main__':
-    # 示例参数
-    gamma = 0.5      # 阻尼系数
-    omega_d = 0.667  # 驱动频率
-    F_d = 1.2        # 驱动力幅度
-    y0 = [0.0, 0.0]  # 初始条件 [theta, omega]
-    t_span = [0, 100] # 模拟时间范围
-    dt = 0.01        # 时间步长
-
-    # 1. 求解并比较三种方法
-    (t_e, y_e), (t_ie, y_ie), (t_rk4, y_rk4) = solve_and_compare_methods(
-        forced_pendulum_ode, y0, t_span, dt, gamma, omega_d, F_d
-    )
-
-    # 绘制时间序列图
-    plot_results(
-        [t_e, t_ie, t_rk4],
-        [y_e, y_ie, y_rk4],
-        ['Euler', 'Improved Euler', 'RK4'],
-        'Forced Pendulum: Angle and Angular Velocity vs. Time'
-    )
-
-    # 绘制相空间图
-    plot_phase_space(
-        [y_e, y_ie, y_rk4],
-        ['Euler', 'Improved Euler', 'RK4'],
-        'Forced Pendulum: Phase Space'
-    )
-
-    # 2. 共振分析
-    omega_d_range = np.linspace(0.1, 2.0, 50)
-    analyze_resonance(gamma, omega_d_range, F_d, y0, t_span, dt)
-
-    # 3. 混沌行为分析（通过改变驱动力幅度）
-    F_d_range = [0.5, 1.0, 1.2, 1.5]
-    analyze_chaos(gamma, omega_d, F_d_range, y0, t_span, dt)
-
-    print("Forced Pendulum simulation complete.")
+    main()
