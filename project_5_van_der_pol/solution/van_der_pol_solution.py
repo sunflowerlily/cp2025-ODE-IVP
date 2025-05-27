@@ -1,33 +1,20 @@
 #!/usr/bin/env python3
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 from typing import Tuple, Callable, List
 
-def van_der_pol_ode(state: np.ndarray, t: float, mu: float = 1.0, omega: float = 1.0) -> np.ndarray:
+def van_der_pol_ode(t, state, mu=1.0, omega=1.0):
     """van der Pol振子的一阶微分方程组。"""
     x, v = state
     return np.array([v, mu*(1-x**2)*v - omega**2*x])
 
-def rk4_step(ode_func: Callable, state: np.ndarray, t: float, dt: float, **kwargs) -> np.ndarray:
-    """使用四阶龙格-库塔方法进行一步数值积分。"""
-    k1 = ode_func(state, t, **kwargs)
-    k2 = ode_func(state + 0.5*dt*k1, t + 0.5*dt, **kwargs)
-    k3 = ode_func(state + 0.5*dt*k2, t + 0.5*dt, **kwargs)
-    k4 = ode_func(state + dt*k3, t + dt, **kwargs)
-    return state + (dt/6.0)*(k1 + 2*k2 + 2*k3 + k4)
-
-def solve_ode(ode_func: Callable, initial_state: np.ndarray, t_span: Tuple[float, float], 
-              dt: float, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
-    """求解常微分方程组。"""
-    t_start, t_end = t_span
-    t = np.arange(t_start, t_end + dt, dt)
-    states = np.zeros((len(t), len(initial_state)))
-    states[0] = initial_state
-    
-    for i in range(1, len(t)):
-        states[i] = rk4_step(ode_func, states[i-1], t[i-1], dt, **kwargs)
-    
-    return t, states
+def solve_ode(ode_func, initial_state, t_span, dt, **kwargs):
+    """使用solve_ivp求解常微分方程组"""
+    t_eval = np.arange(t_span[0], t_span[1] + dt, dt)
+    sol = solve_ivp(ode_func, t_span, initial_state, 
+                   t_eval=t_eval, args=tuple(kwargs.values()), method='RK45')
+    return sol.t, sol.y.T
 
 def plot_time_evolution(t: np.ndarray, states: np.ndarray, title: str) -> None:
     """Plot the time evolution of states."""
@@ -51,11 +38,6 @@ def plot_phase_space(states: np.ndarray, title: str) -> None:
     plt.grid(True)
     plt.axis('equal')
     plt.show()
-
-def calculate_energy(state: np.ndarray, omega: float = 1.0) -> float:
-    """计算van der Pol振子的能量。"""
-    x, v = state
-    return 0.5*v**2 + 0.5*omega**2*x**2
 
 def analyze_limit_cycle(states: np.ndarray) -> Tuple[float, float]:
     """分析极限环的特征（振幅和周期）。"""
@@ -93,7 +75,7 @@ def main():
     plot_time_evolution(t, states, f'Time Evolution of van der Pol Oscillator (μ={mu})')
     
     # Task 2 - Parameter influence analysis
-    mu_values = [0.1, 1.0, 5.0]
+    mu_values = [1.0, 2.0, 4.0]
     for mu in mu_values:
         t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
         plot_time_evolution(t, states, f'Time Evolution of van der Pol Oscillator (μ={mu})')
@@ -104,18 +86,6 @@ def main():
     for mu in mu_values:
         t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
         plot_phase_space(states, f'Phase Space Trajectory of van der Pol Oscillator (μ={mu})')
-    
-    # Task 4 - Energy analysis
-    t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
-    energies = np.array([calculate_energy(state, omega) for state in states])
-    
-    plt.figure(figsize=(10, 6))
-    plt.plot(t, energies)
-    plt.xlabel('Time t')
-    plt.ylabel('Energy E')
-    plt.title('Energy Evolution of van der Pol Oscillator')
-    plt.grid(True)
-    plt.show()
 
 if __name__ == "__main__":
     main()
