@@ -18,17 +18,16 @@ import os
 # 添加项目路径以导入学生代码
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-try:
-    from project_1_student import (
-        lotka_volterra_system,
-        euler_method,
-        improved_euler_method,
-        runge_kutta_4,
-        solve_lotka_volterra,
-        compare_methods
-    )
-except ImportError:
-    print("警告: 无法导入学生代码，某些测试可能失败")
+#from solution.lotka_volterra_solution import (
+from lotka_volterra_student import (
+    lotka_volterra_system,
+    euler_method,
+    improved_euler_method,
+    runge_kutta_4,
+    solve_lotka_volterra,
+    compare_methods
+)
+
 
 
 class TestLotkaVolterraSystem(unittest.TestCase):
@@ -78,7 +77,7 @@ class TestLotkaVolterraSystem(unittest.TestCase):
     def test_system_different_states_points_2(self):
         """测试不同状态下的方程组 - 2分"""
         test_cases = [
-            ([1.0, 1.0], [-0.5, -1.5]),
+            ([1.0, 1.0], [0.5, -1.5]),  # 修改这里的期望值
             ([3.0, 1.0], [1.5, -0.5]),
             ([1.0, 3.0], [-0.5, -4.5])
         ]

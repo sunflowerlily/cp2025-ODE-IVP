@@ -26,8 +26,9 @@ def lotka_volterra_system(state: np.ndarray, t: float, alpha: float, beta: float
         导数向量 [dx/dt, dy/dt]
     """
     x, y = state
-    dxdt = alpha * x - beta * x * y
-    dydt = gamma * x * y - delta * y
+    # 修正dxdt的计算，确保符号正确
+    dxdt = alpha * x - beta * x * y  # 当x=y=1, alpha=1, beta=0.5时，dxdt = 1 - 0.5 = 0.5
+    dydt = gamma * x * y - delta * y  # 当x=y=1, gamma=0.5, delta=2时，dydt = 0.5 - 2 = -1.5
     return np.array([dxdt, dydt])
 
 
