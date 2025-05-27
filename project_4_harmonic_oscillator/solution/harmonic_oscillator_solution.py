@@ -3,12 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Callable, List
 
-def harmonic_oscillator_ode(state: np.ndarray, t: float, omega: float = 1.0) -> np.ndarray:
+def harmonic_oscillator_ode(state, t, omega=1.0):
     """简谐振子的一阶微分方程组。"""
     x, v = state
     return np.array([v, -omega**2 * x])
 
-def anharmonic_oscillator_ode(state: np.ndarray, t: float, omega: float = 1.0) -> np.ndarray:
+def anharmonic_oscillator_ode(state, t, omega=1.0):
     """非谐振子的一阶微分方程组。"""
     x, v = state
     return np.array([v, -omega**2 * x**3])

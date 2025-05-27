@@ -1,7 +1,13 @@
 import numpy as np
 import unittest
 from scipy.integrate import solve_ivp
-from project_4_student import (
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+#from solution.harmonic_oscillator_solution import (
+from harmonic_oscillator_student import (
     harmonic_oscillator_ode,
     anharmonic_oscillator_ode,
     rk4_step,
