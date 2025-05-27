@@ -18,8 +18,8 @@ import os
 # 添加项目路径以导入学生代码
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-#from solution.lotka_volterra_solution import (
-from lotka_volterra_student import (
+from solution.lotka_volterra_solution import (
+#from lotka_volterra_student import (
     lotka_volterra_system,
     euler_method,
     improved_euler_method,
