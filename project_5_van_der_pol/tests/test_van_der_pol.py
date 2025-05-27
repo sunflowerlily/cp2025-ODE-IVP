@@ -7,9 +7,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solution.van_der_pol_solution import van_der_pol_ode, solve_ode, analyze_limit_cycle
-
-#from van_der_pol_student import van_der_pol_ode, solve_ode, analyze_limit_cycle
+#from solution.van_der_pol_solution import van_der_pol_ode, solve_ode, analyze_limit_cycle
+from van_der_pol_student import van_der_pol_ode, solve_ode, analyze_limit_cycle
 
 class TestVanDerPolOscillator(unittest.TestCase):
     def setUp(self):

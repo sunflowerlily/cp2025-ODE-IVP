@@ -5,8 +5,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solution.forced_pendulum_solution import forced_pendulum_ode, solve_pendulum, find_resonance
-#from forced_pendulum_student import forced_pendulum_ode, solve_pendulum, find_resonance
+#from solution.forced_pendulum_solution import forced_pendulum_ode, solve_pendulum, find_resonance
+from forced_pendulum_student import forced_pendulum_ode, solve_pendulum, find_resonance
 
 class TestForcedPendulum(unittest.TestCase):
     def test_forced_pendulum_ode(self):

@@ -5,8 +5,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from solution.lorenz_equations_solution import (
-#from lorenz_equations_student import (
+#from solution.lorenz_equations_solution import (
+from lorenz_equations_student import (
     lorenz_system, solve_lorenz_equations, 
     compare_initial_conditions
 )
