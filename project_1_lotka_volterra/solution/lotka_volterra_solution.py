@@ -171,7 +171,7 @@ def compare_methods(alpha: float, beta: float, gamma: float, delta: float,
 
 
 def plot_population_dynamics(t: np.ndarray, x: np.ndarray, y: np.ndarray, 
-                           title: str = "Lotka-Volterra种群动力学") -> None:
+                           title: str = "Lotka-Volterra Population Dynamics") -> None:
     """
     绘制种群动力学图
     
@@ -185,21 +185,21 @@ def plot_population_dynamics(t: np.ndarray, x: np.ndarray, y: np.ndarray,
     
     # 时间序列图
     plt.subplot(1, 2, 1)
-    plt.plot(t, x, 'b-', label='猎物 (x)', linewidth=2)
-    plt.plot(t, y, 'r-', label='捕食者 (y)', linewidth=2)
-    plt.xlabel('时间 t')
-    plt.ylabel('种群数量')
-    plt.title('种群数量随时间变化')
+    plt.plot(t, x, 'b-', label='Prey (x)', linewidth=2)
+    plt.plot(t, y, 'r-', label='Predator (y)', linewidth=2)
+    plt.xlabel('Time t')
+    plt.ylabel('Population')
+    plt.title('Population vs Time')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     # 相空间轨迹图
     plt.subplot(1, 2, 2)
     plt.plot(x, y, 'g-', linewidth=2)
-    plt.plot(x[0], y[0], 'go', markersize=8, label='起点')
-    plt.xlabel('猎物数量 (x)')
-    plt.ylabel('捕食者数量 (y)')
-    plt.title('相空间轨迹')
+    plt.plot(x[0], y[0], 'go', markersize=8, label='Start')
+    plt.xlabel('Prey Population (x)')
+    plt.ylabel('Predator Population (y)')
+    plt.title('Phase Space Trajectory')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
@@ -215,7 +215,7 @@ def plot_method_comparison(results: dict) -> None:
     plt.figure(figsize=(15, 10))
     
     methods = ['euler', 'improved_euler', 'rk4']
-    method_names = ['欧拉法', '改进欧拉法', '4阶龙格-库塔法']
+    method_names = ['Euler Method', 'Improved Euler', '4th-order Runge-Kutta']
     colors = ['blue', 'orange', 'green']
     
     # 时间序列比较
@@ -225,11 +225,11 @@ def plot_method_comparison(results: dict) -> None:
         x = results[method]['x']
         y = results[method]['y']
         
-        plt.plot(t, x, color=color, linestyle='-', label='猎物', linewidth=2)
-        plt.plot(t, y, color=color, linestyle='--', label='捕食者', linewidth=2)
-        plt.xlabel('时间 t')
-        plt.ylabel('种群数量')
-        plt.title(f'{name} - 时间序列')
+        plt.plot(t, x, color=color, linestyle='-', label='Prey', linewidth=2)
+        plt.plot(t, y, color=color, linestyle='--', label='Predator', linewidth=2)
+        plt.xlabel('Time t')
+        plt.ylabel('Population')
+        plt.title(f'{name} - Time Series')
         plt.legend()
         plt.grid(True, alpha=0.3)
     
@@ -241,9 +241,9 @@ def plot_method_comparison(results: dict) -> None:
         
         plt.plot(x, y, color=color, linewidth=2)
         plt.plot(x[0], y[0], 'o', color=color, markersize=6)
-        plt.xlabel('猎物数量 (x)')
-        plt.ylabel('捕食者数量 (y)')
-        plt.title(f'{name} - 相空间')
+        plt.xlabel('Prey Population (x)')
+        plt.ylabel('Predator Population (y)')
+        plt.title(f'{name} - Phase Space')
         plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
@@ -277,23 +277,23 @@ def analyze_parameters() -> None:
         plt.plot(x, y, label=f'x0={x0}, y0={y0}', linewidth=2)
     
     plt.subplot(2, 2, 1)
-    plt.xlabel('时间 t')
-    plt.ylabel('猎物数量 (x)')
-    plt.title('不同初始条件下的猎物数量')
+    plt.xlabel('Time t')
+    plt.ylabel('Prey Population (x)')
+    plt.title('Prey Population under Different Initial Conditions')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     plt.subplot(2, 2, 2)
-    plt.xlabel('时间 t')
-    plt.ylabel('捕食者数量 (y)')
-    plt.title('不同初始条件下的捕食者数量')
+    plt.xlabel('Time t')
+    plt.ylabel('Predator Population (y)')
+    plt.title('Predator Population under Different Initial Conditions')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     plt.subplot(2, 2, 3)
-    plt.xlabel('猎物数量 (x)')
-    plt.ylabel('捕食者数量 (y)')
-    plt.title('不同初始条件的相空间轨迹')
+    plt.xlabel('Prey Population (x)')
+    plt.ylabel('Predator Population (y)')
+    plt.title('Phase Space Trajectories for Different Initial Conditions')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
@@ -306,9 +306,9 @@ def analyze_parameters() -> None:
     
     plt.subplot(2, 2, 4)
     plt.plot(t, H, 'purple', linewidth=2)
-    plt.xlabel('时间 t')
-    plt.ylabel('守恒量 H')
-    plt.title('能量守恒检验')
+    plt.xlabel('Time t')
+    plt.ylabel('Conserved Quantity H')
+    plt.title('Energy Conservation Test')
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()

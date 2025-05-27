@@ -30,23 +30,23 @@ def solve_ode(ode_func: Callable, initial_state: np.ndarray, t_span: Tuple[float
     return t, states
 
 def plot_time_evolution(t: np.ndarray, states: np.ndarray, title: str) -> None:
-    """绘制状态随时间的演化。"""
+    """Plot the time evolution of states."""
     plt.figure(figsize=(10, 6))
-    plt.plot(t, states[:, 0], label='位置 x(t)')
-    plt.plot(t, states[:, 1], label='速度 v(t)')
-    plt.xlabel('时间 t')
-    plt.ylabel('状态变量')
+    plt.plot(t, states[:, 0], label='Position x(t)')
+    plt.plot(t, states[:, 1], label='Velocity v(t)')
+    plt.xlabel('Time t')
+    plt.ylabel('State Variables')
     plt.title(title)
     plt.grid(True)
     plt.legend()
     plt.show()
 
 def plot_phase_space(states: np.ndarray, title: str) -> None:
-    """绘制相空间轨迹。"""
+    """Plot the phase space trajectory."""
     plt.figure(figsize=(8, 8))
     plt.plot(states[:, 0], states[:, 1])
-    plt.xlabel('位置 x')
-    plt.ylabel('速度 v')
+    plt.xlabel('Position x')
+    plt.ylabel('Velocity v')
     plt.title(title)
     plt.grid(True)
     plt.axis('equal')
@@ -81,39 +81,39 @@ def analyze_limit_cycle(states: np.ndarray) -> Tuple[float, float]:
     return amplitude, period
 
 def main():
-    # 设置基本参数
+    # Set basic parameters
     mu = 1.0
     omega = 1.0
     t_span = (0, 50)
     dt = 0.01
     initial_state = np.array([1.0, 0.0])
     
-    # 任务1 - 基本实现
+    # Task 1 - Basic implementation
     t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
-    plot_time_evolution(t, states, f'van der Pol振子的时间演化 (μ={mu})')
+    plot_time_evolution(t, states, f'Time Evolution of van der Pol Oscillator (μ={mu})')
     
-    # 任务2 - 参数影响分析
+    # Task 2 - Parameter influence analysis
     mu_values = [0.1, 1.0, 5.0]
     for mu in mu_values:
         t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
-        plot_time_evolution(t, states, f'van der Pol振子的时间演化 (μ={mu})')
+        plot_time_evolution(t, states, f'Time Evolution of van der Pol Oscillator (μ={mu})')
         amplitude, period = analyze_limit_cycle(states)
-        print(f'μ = {mu}: 振幅 ≈ {amplitude:.3f}, 周期 ≈ {period*dt:.3f}')
+        print(f'μ = {mu}: Amplitude ≈ {amplitude:.3f}, Period ≈ {period*dt:.3f}')
     
-    # 任务3 - 相空间分析
+    # Task 3 - Phase space analysis
     for mu in mu_values:
         t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
-        plot_phase_space(states, f'van der Pol振子的相空间轨迹 (μ={mu})')
+        plot_phase_space(states, f'Phase Space Trajectory of van der Pol Oscillator (μ={mu})')
     
-    # 任务4 - 能量分析
+    # Task 4 - Energy analysis
     t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
     energies = np.array([calculate_energy(state, omega) for state in states])
     
     plt.figure(figsize=(10, 6))
     plt.plot(t, energies)
-    plt.xlabel('时间 t')
-    plt.ylabel('能量 E')
-    plt.title('van der Pol振子的能量随时间的变化')
+    plt.xlabel('Time t')
+    plt.ylabel('Energy E')
+    plt.title('Energy Evolution of van der Pol Oscillator')
     plt.grid(True)
     plt.show()
 

@@ -35,23 +35,23 @@ def solve_ode(ode_func: Callable, initial_state: np.ndarray, t_span: Tuple[float
     return t, states
 
 def plot_time_evolution(t: np.ndarray, states: np.ndarray, title: str) -> None:
-    """绘制状态随时间的演化。"""
+    """Plot the time evolution of states."""
     plt.figure(figsize=(10, 6))
-    plt.plot(t, states[:, 0], label='位置 x(t)')
-    plt.plot(t, states[:, 1], label='速度 v(t)')
-    plt.xlabel('时间 t')
-    plt.ylabel('状态变量')
+    plt.plot(t, states[:, 0], label='Position x(t)')
+    plt.plot(t, states[:, 1], label='Velocity v(t)')
+    plt.xlabel('Time t')
+    plt.ylabel('State Variables')
     plt.title(title)
     plt.grid(True)
     plt.legend()
     plt.show()
 
 def plot_phase_space(states: np.ndarray, title: str) -> None:
-    """绘制相空间轨迹。"""
+    """Plot the phase space trajectory."""
     plt.figure(figsize=(8, 8))
     plt.plot(states[:, 0], states[:, 1])
-    plt.xlabel('位置 x')
-    plt.ylabel('速度 v')
+    plt.xlabel('Position x')
+    plt.ylabel('Velocity v')
     plt.title(title)
     plt.grid(True)
     plt.axis('equal')
@@ -74,19 +74,19 @@ def analyze_period(t: np.ndarray, states: np.ndarray) -> float:
     return np.mean(periods)
 
 def main():
-    # 设置参数
+    # Set parameters
     omega = 1.0
     t_span = (0, 50)
     dt = 0.01
     
-    # 任务1 - 简谐振子的数值求解
+    # Task 1 - Numerical solution of harmonic oscillator
     initial_state = np.array([1.0, 0.0])  # x(0)=1, v(0)=0
     t, states = solve_ode(harmonic_oscillator_ode, initial_state, t_span, dt, omega=omega)
-    plot_time_evolution(t, states, '简谐振子的时间演化')
+    plot_time_evolution(t, states, 'Time Evolution of Harmonic Oscillator')
     period = analyze_period(t, states)
-    print(f'简谐振子的周期: {period:.4f} (理论值: {2*np.pi/omega:.4f})')
+    print(f'Harmonic Oscillator Period: {period:.4f} (Theoretical: {2*np.pi/omega:.4f})')
     
-    # 任务2 - 振幅对周期的影响分析
+    # Task 2 - Analysis of amplitude effect on period
     amplitudes = [0.5, 1.0, 2.0]
     periods = []
     for A in amplitudes:
@@ -94,23 +94,23 @@ def main():
         t, states = solve_ode(harmonic_oscillator_ode, initial_state, t_span, dt, omega=omega)
         period = analyze_period(t, states)
         periods.append(period)
-        print(f'振幅 {A}: 周期 = {period:.4f}')
+        print(f'Amplitude {A}: Period = {period:.4f}')
     
-    # 任务3 - 非谐振子的数值分析
+    # Task 3 - Numerical analysis of anharmonic oscillator
     for A in amplitudes:
         initial_state = np.array([A, 0.0])
         t, states = solve_ode(anharmonic_oscillator_ode, initial_state, t_span, dt, omega=omega)
         period = analyze_period(t, states)
-        print(f'非谐振子 - 振幅 {A}: 周期 = {period:.4f}')
-        plot_time_evolution(t, states, f'非谐振子的时间演化 (A={A})')
+        print(f'Anharmonic Oscillator - Amplitude {A}: Period = {period:.4f}')
+        plot_time_evolution(t, states, f'Time Evolution of Anharmonic Oscillator (A={A})')
     
-    # 任务4 - 相空间分析
+    # Task 4 - Phase space analysis
     initial_state = np.array([1.0, 0.0])
     t, states_harmonic = solve_ode(harmonic_oscillator_ode, initial_state, t_span, dt, omega=omega)
-    plot_phase_space(states_harmonic, '简谐振子的相空间轨迹')
+    plot_phase_space(states_harmonic, 'Phase Space Trajectory of Harmonic Oscillator')
     
     t, states_anharmonic = solve_ode(anharmonic_oscillator_ode, initial_state, t_span, dt, omega=omega)
-    plot_phase_space(states_anharmonic, '非谐振子的相空间轨迹')
+    plot_phase_space(states_anharmonic, 'Phase Space Trajectory of Anharmonic Oscillator')
 
 if __name__ == "__main__":
     main()

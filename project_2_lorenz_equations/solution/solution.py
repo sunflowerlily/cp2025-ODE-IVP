@@ -258,7 +258,7 @@ def analyze_chaos_behavior(sigma: float = 10.0, r: float = 28.0, b: float = 8/3,
 
 
 def plot_time_series(t: np.ndarray, x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                    title: str = "洛伦兹方程时间序列") -> None:
+                    title: str = "Lorenz Equations Time Series") -> None:
     """
     绘制洛伦兹方程的时间序列图
     """
@@ -277,7 +277,7 @@ def plot_time_series(t: np.ndarray, x: np.ndarray, y: np.ndarray, z: np.ndarray,
     
     plt.subplot(3, 1, 3)
     plt.plot(t, z, 'g-', linewidth=0.8)
-    plt.xlabel('时间 t')
+    plt.xlabel('Time t')
     plt.ylabel('z(t)')
     plt.grid(True, alpha=0.3)
     
@@ -286,7 +286,7 @@ def plot_time_series(t: np.ndarray, x: np.ndarray, y: np.ndarray, z: np.ndarray,
 
 
 def plot_strange_attractor(x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                          title: str = "洛伦兹奇异吸引子") -> None:
+                          title: str = "Lorenz Strange Attractor") -> None:
     """
     绘制洛伦兹奇异吸引子的3D图和投影图
     """
@@ -298,14 +298,14 @@ def plot_strange_attractor(x: np.ndarray, y: np.ndarray, z: np.ndarray,
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
-    ax1.set_title('3D轨道')
+    ax1.set_title('3D Trajectory')
     
     # XY投影
     ax2 = fig.add_subplot(2, 3, 2)
     ax2.plot(x, y, linewidth=0.5, alpha=0.8)
     ax2.set_xlabel('X')
     ax2.set_ylabel('Y')
-    ax2.set_title('XY投影')
+    ax2.set_title('XY Projection')
     ax2.grid(True, alpha=0.3)
     
     # XZ投影
@@ -313,7 +313,7 @@ def plot_strange_attractor(x: np.ndarray, y: np.ndarray, z: np.ndarray,
     ax3.plot(x, z, linewidth=0.5, alpha=0.8)
     ax3.set_xlabel('X')
     ax3.set_ylabel('Z')
-    ax3.set_title('XZ投影')
+    ax3.set_title('XZ Projection')
     ax3.grid(True, alpha=0.3)
     
     # YZ投影
@@ -321,22 +321,21 @@ def plot_strange_attractor(x: np.ndarray, y: np.ndarray, z: np.ndarray,
     ax4.plot(y, z, linewidth=0.5, alpha=0.8)
     ax4.set_xlabel('Y')
     ax4.set_ylabel('Z')
-    ax4.set_title('YZ投影')
+    ax4.set_title('YZ Projection')
     ax4.grid(True, alpha=0.3)
     
-    # 庞加莱截面 (z = r-1)
+    # 庞加莱截面
     ax5 = fig.add_subplot(2, 3, 5)
-    r = 28.0  # 假设使用标准参数
+    r = 28.0
     z_section = r - 1
     tolerance = 0.5
     
-    # 找到接近截面的点
     indices = np.where(np.abs(z - z_section) < tolerance)[0]
     if len(indices) > 0:
         ax5.scatter(x[indices], y[indices], s=1, alpha=0.6)
     ax5.set_xlabel('X')
     ax5.set_ylabel('Y')
-    ax5.set_title(f'庞加莱截面 (z≈{z_section:.1f})')
+    ax5.set_title(f'Poincaré Section (z≈{z_section:.1f})')
     ax5.grid(True, alpha=0.3)
     
     # 相空间密度图
@@ -344,7 +343,7 @@ def plot_strange_attractor(x: np.ndarray, y: np.ndarray, z: np.ndarray,
     ax6.hist2d(x, y, bins=50, density=True, cmap='viridis')
     ax6.set_xlabel('X')
     ax6.set_ylabel('Y')
-    ax6.set_title('XY相空间密度')
+    ax6.set_title('XY Phase Space Density')
     
     plt.suptitle(title, fontsize=16)
     plt.tight_layout()
@@ -358,19 +357,19 @@ def plot_method_comparison_lorenz(results: Dict) -> None:
     fig = plt.figure(figsize=(20, 15))
     
     methods = ['euler', 'improved_euler', 'rk4']
-    method_names = ['欧拉法', '改进欧拉法', '4阶龙格-库塔法']
+    method_names = ['Euler Method', 'Improved Euler', '4th-order Runge-Kutta']
     colors = ['blue', 'orange', 'green']
     
-    # 时间序列比较（只显示y分量）
+    # 时间序列比较
     for i, (method, name, color) in enumerate(zip(methods, method_names, colors)):
         plt.subplot(3, 3, i+1)
         t = results[method]['t']
         y = results[method]['y']
         
         plt.plot(t, y, color=color, linewidth=1)
-        plt.xlabel('时间 t')
+        plt.xlabel('Time t')
         plt.ylabel('y(t)')
-        plt.title(f'{name} - 时间序列')
+        plt.title(f'{name} - Time Series')
         plt.grid(True, alpha=0.3)
     
     # XY相空间比较
@@ -382,10 +381,10 @@ def plot_method_comparison_lorenz(results: Dict) -> None:
         plt.plot(x, y, color=color, linewidth=0.5, alpha=0.8)
         plt.xlabel('X')
         plt.ylabel('Y')
-        plt.title(f'{name} - XY投影')
+        plt.title(f'{name} - XY Projection')
         plt.grid(True, alpha=0.3)
     
-    # 3D轨道比较（子图）
+    # 3D轨道比较
     for i, (method, name, color) in enumerate(zip(methods, method_names, colors)):
         ax = fig.add_subplot(3, 3, i+7, projection='3d')
         x = results[method]['x']
@@ -396,7 +395,7 @@ def plot_method_comparison_lorenz(results: Dict) -> None:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        ax.set_title(f'{name} - 3D轨道')
+        ax.set_title(f'{name} - 3D Trajectory')
     
     plt.tight_layout()
     plt.show()
@@ -417,29 +416,29 @@ def plot_chaos_analysis(chaos_results: Dict) -> None:
     
     # 轨道比较
     plt.subplot(2, 2, 1)
-    plt.plot(t[:5000], y1[:5000], 'b-', label='基准轨道', linewidth=1)
-    plt.plot(t[:5000], y2[:5000], 'r--', label='扰动轨道', linewidth=1, alpha=0.8)
-    plt.xlabel('时间 t')
+    plt.plot(t[:5000], y1[:5000], 'b-', label='Reference Trajectory', linewidth=1)
+    plt.plot(t[:5000], y2[:5000], 'r--', label='Perturbed Trajectory', linewidth=1, alpha=0.8)
+    plt.xlabel('Time t')
     plt.ylabel('y(t)')
-    plt.title('轨道敏感性比较')
+    plt.title('Trajectory Sensitivity Comparison')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
     # 距离演化
     plt.subplot(2, 2, 2)
     plt.semilogy(t, distance, 'purple', linewidth=1)
-    plt.xlabel('时间 t')
-    plt.ylabel('轨道间距离 (对数尺度)')
-    plt.title('轨道发散分析')
+    plt.xlabel('Time t')
+    plt.ylabel('Trajectory Distance (log scale)')
+    plt.title('Trajectory Divergence Analysis')
     plt.grid(True, alpha=0.3)
     
     # 相空间比较
     plt.subplot(2, 2, 3)
-    plt.plot(x1, y1, 'b-', linewidth=0.5, alpha=0.7, label='基准轨道')
-    plt.plot(x2, y2, 'r-', linewidth=0.5, alpha=0.7, label='扰动轨道')
+    plt.plot(x1, y1, 'b-', linewidth=0.5, alpha=0.7, label='Reference Trajectory')
+    plt.plot(x2, y2, 'r-', linewidth=0.5, alpha=0.7, label='Perturbed Trajectory')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.title('相空间轨道比较')
+    plt.title('Phase Space Trajectory Comparison')
     plt.legend()
     plt.grid(True, alpha=0.3)
     
@@ -448,17 +447,16 @@ def plot_chaos_analysis(chaos_results: Dict) -> None:
     log_distance = np.log(distance + 1e-15)
     plt.plot(t, log_distance, 'green', linewidth=1)
     
-    # 显示拟合直线（如果李雅普诺夫指数有效）
     lyap = chaos_results['lyapunov_exponent']
     if not np.isnan(lyap):
         fit_line = lyap * t + np.log(1e-8)
         plt.plot(t, fit_line, 'k--', linewidth=2, 
-                label=f'拟合斜率: {lyap:.3f}')
+                label=f'Fitted Slope: {lyap:.3f}')
         plt.legend()
     
-    plt.xlabel('时间 t')
-    plt.ylabel('ln(距离)')
-    plt.title('李雅普诺夫指数估算')
+    plt.xlabel('Time t')
+    plt.ylabel('ln(Distance)')
+    plt.title('Lyapunov Exponent Estimation')
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
@@ -488,7 +486,7 @@ def explore_parameter_space() -> None:
         plt.title(f'r = {r}')
         plt.ylabel('y(t)' if i == 0 else '')
         if i == len(r_values)//2:
-            plt.xlabel('时间序列')
+            plt.xlabel('Time Series')
         plt.grid(True, alpha=0.3)
         
         # XY相空间
@@ -497,7 +495,7 @@ def explore_parameter_space() -> None:
         plt.ylabel('Y' if i == 0 else '')
         plt.xlabel('X')
         if i == len(r_values)//2:
-            plt.xlabel('XY相空间')
+            plt.xlabel('XY Phase Space')
         plt.grid(True, alpha=0.3)
         
         # XZ相空间
@@ -506,12 +504,12 @@ def explore_parameter_space() -> None:
         plt.ylabel('Z' if i == 0 else '')
         plt.xlabel('X')
         if i == len(r_values)//2:
-            plt.xlabel('XZ相空间')
+            plt.xlabel('XZ Phase Space')
         plt.grid(True, alpha=0.3)
-    
-    plt.suptitle('洛伦兹系统参数空间探索', fontsize=16)
-    plt.tight_layout()
-    plt.show()
+        
+        plt.suptitle('Lorenz System Parameter Space Exploration', fontsize=16)
+        plt.tight_layout()
+        plt.show()
 
 
 def main():
